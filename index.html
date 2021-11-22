@@ -5,11 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chat</title>
     <link rel="stylesheet" href="estilos.css">
-
-    <script src="/__/firebase/7.7.0/firebase-app.js"></script>
-    <script src="/__/firebase/7.7.0/firebase-auth.js"></script>
-    <script src="/__/firebase/7.7.0/firebase-firestore.js"></script>
-    <script src="/__/firebase/init.js"></script>
+    <!-- Carga el núcleo de Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <!-- Agrega el manejo de autenticación. -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js">
+    </script>
+    <!-- Agrega el manejo de cloud firestore. -->
+    <script
+    src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js">
+    </script>
+    <script src="js/init.js"></script>
+    
   </head>
   <body>
     <h1>Chat</h1>
@@ -22,10 +28,6 @@
       // @ts-check
       /** Nombre de usuario atenticado por Firebase. */
       let usuario = "";
-var hoy=new Date();
-      var fecha=hoy.getDate()+'-'+(hoy.getMonth()+1)+'-'+hoy.getFullYear();
-      var hora=hoy.getHours()+':'+hoy.getMinutes();
-      var fechaYHora =fecha+" hora:"+hora;
       /** Conexión al sistema de autenticación de Firebase. */
       // @ts-ignore
       const auth = firebase.auth();
@@ -67,15 +69,12 @@ var hoy=new Date();
           USUARIO: usuario,
           // @ts-ignore
           TEXTO: texto.value.trim(),
-          
-          
           // @ts-ignore
           TIMESTAMP: firebase.firestore.FieldValue.serverTimestamp()
         });
       }
       /** Muestra los mensaje almacenados en la collection "MENSAJE". Se
        * actualiza automáticamente. */
-       let fechaActual="";
       function muestraMensajes() {
         /* Consulta que se actualiza automáticamente. Pide todos los registros
          * de la colección "MENSAJE" ordenador por el campo "TIMESTAMP" de forma
@@ -96,15 +95,15 @@ var hoy=new Date();
               querySnapshot.forEach(doc => {
                 // recupera los datos almacenados en el registro.
                 const data = doc.data();
+                
+                var d = data.TIMESTAMP.toDate(),
+                dformat = [d.getDate(), d.getMonth()+1, d.getFullYear()].join('/')+' '+
+                          [d.getHours(),d.getMinutes(),d.getSeconds()].join(':');
                 /* Agrega un li con los datos del registro, que se codifican
                  * para evitar inyección de código. */
                 // @ts-ignore
-                
-      
-                fechaActual=fechaYHora;
                 mensajes.innerHTML += /* html */
-                  `<li><b>${cod(data.USUARIO)} ${(fechaActual)} </b><br>${cod(data.TEXTO)} </li>`;
-
+                  `<li><u>${cod(data.USUARIO)}</u> ${dformat}<br>${cod(data.TEXTO)}</li>`;
               })
             },
             /* Función que se invoca cuando hay un error. Muestra el error. Al
@@ -140,6 +139,5 @@ var hoy=new Date();
         return (texto || "").replace(/[&<>"']/g, letra => codMap.get(letra));
       }
     </script>
-    <footer>Macias Herrera ALejandro</footer>
   </body>
 </html>
